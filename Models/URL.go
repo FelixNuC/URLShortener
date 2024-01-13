@@ -21,6 +21,7 @@ type URL struct {
 func (u *URL) GenerateShortURL(originalURL string) string {
 	Ourl := u.OriginalURL
 	if originalURL == "" {
+
 		return ""
 	}
 	hasher := sha256.New()

@@ -3,7 +3,6 @@ package controllers
 import (
 	"URLShortener/dao"
 	"net/http"
-	// Importa otros paquetes necesarios
 )
 
 func RedirectURLHandler(w http.ResponseWriter, r *http.Request) {

@@ -35,7 +35,7 @@ func NewURLDao() (*URLDao, error) {
 		return nil, err
 	}
 
-	db := client.Database("nombreDeTuBaseDeDatos")
+	db := client.Database("URLSHortener")
 
 	return &URLDao{client: client, db: db}, nil
 }

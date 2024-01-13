@@ -5,14 +5,14 @@ import (
 	"URLShortener/dao"
 	"encoding/json"
 	"net/http"
+	"time"
+
+	"github.com/sirupsen/logrus"
 )
 
-// Estructura para la solicitud de acortar URL
 type shortenURLRequest struct {
 	OriginalURL string `json:"original_url"`
 }
-
-// Estructura para la respuesta de URL acortada
 type shortenURLResponse struct {
 	ShortenedURL string `json:"shortened_url"`
 }
@@ -26,19 +26,18 @@ func ShortenURLHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Crear y validar la URL
 	url := models.URL{OriginalURL: request.OriginalURL}
 	if err := url.Validate(); err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 
-	// Generar la URL corta pasando la URL original como parámetro
-	url.ShortenedURL = url.GenerateShortURL(url.OriginalURL) // Ajustado aquí
-
+	url.ShortenedURL = url.GenerateShortURL(url.OriginalURL)
+	url.CreatedAt = time.Now()
+	url.ExpiresAt = time.Now().AddDate(10, 0, 0)
 	dao, err := dao.NewURLDao()
 	if err != nil { //!Err Handling
-
+		logrus.Error("error al instanciar el dao")
 		return
 	}
 	err = dao.Save(&url)
