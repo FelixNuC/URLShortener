@@ -2,10 +2,14 @@ package models
 
 import (
 	"URLShortener/interfaces"
+	"crypto/sha256"
+	"encoding/base64"
+	"errors"
+	"net/url"
 	"time"
 )
 
-var _ interfaces.URLInterface = &URL{} // Verifica que *URL implementa URLInterface
+var _ interfaces.URLInterface = &URL{}
 
 type URL struct {
 	OriginalURL  string    `json:"original_url"`
@@ -14,32 +18,38 @@ type URL struct {
 	ExpiresAt    time.Time `json:"expires_at"`
 }
 
-// Aquí implementamos los métodos de la interfaz URLInterface.
-func (u *URL) GenerateShortURL() string {
-	// Lógica para generar la URL acortada
-	return "short_url" // Debes devolver un string como lo indica la interfaz
+func (u *URL) GenerateShortURL(originalURL string) string {
+	Ourl := u.OriginalURL
+	if originalURL == "" {
+		return ""
+	}
+	hasher := sha256.New()
+	hasher.Write([]byte(Ourl))
+	sha := hasher.Sum(nil)
+
+	shortURL := base64.URLEncoding.EncodeToString(sha[:])
+
+	if len(shortURL) > 10 {
+		shortURL = shortURL[:10]
+	}
+
+	return shortURL
 }
 
 func (u *URL) Validate() error {
-	// Lógica para validar la URL original
-	// Asegúrate de devolver un error, nil si no hay error.
-	return nil
-}
 
-func (u *URL) Save() error {
-	// Lógica para guardar la URL en la base de datos
-	// Devuelve nil o un error.
-	return nil
-}
+	if u.OriginalURL == "" {
+		return errors.New("la URL original no puede estar vacía")
+	}
 
-func (u *URL) Delete() error {
-	// Lógica para eliminar la URL
-	// Devuelve nil o un error.
-	return nil
-}
+	parsedURL, err := url.ParseRequestURI(u.OriginalURL)
+	if err != nil {
+		return errors.New("la URL original no es válida")
+	}
 
-func (u *URL) Get() (string, error) {
-	// Lógica para obtener la URL acortada
-	// Devuelve un string y nil o un error.
-	return "original_url", nil
+	if parsedURL.Scheme != "http" && parsedURL.Scheme != "https" {
+		return errors.New("la URL debe comenzar con http o https")
+	}
+
+	return nil
 }

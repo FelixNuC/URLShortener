@@ -1,9 +1,6 @@
 package interfaces
 
 type URLInterface interface {
-	GenerateShortURL() string
+	GenerateShortURL(string) string
 	Validate() error
-	Save() error
-	Delete() error
-	Get() (string, error)
 }
