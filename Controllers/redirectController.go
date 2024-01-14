@@ -1,7 +1,7 @@
 package controllers
 
 import (
-	"URLShortener/dao"
+	"URLShortener/DAO"
 	"net/http"
 )
 
@@ -10,7 +10,7 @@ func RedirectURLHandler(w http.ResponseWriter, r *http.Request) {
 	shortURL := r.URL.Path[len("/"):]
 
 	// Obtener el DAO y buscar la URL original correspondiente
-	dao, err := dao.NewURLDao()
+	dao, err := DAO.NewURLDao()
 	if err != nil { //!Err Handling
 
 		return
@@ -22,6 +22,5 @@ func RedirectURLHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Redireccionar a la URL original
 	http.Redirect(w, r, url.OriginalURL, http.StatusFound)
 }

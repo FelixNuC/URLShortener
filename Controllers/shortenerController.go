@@ -1,13 +1,11 @@
 package controllers
 
 import (
+	"URLShortener/DAO"
 	models "URLShortener/Models"
-	"URLShortener/dao"
 	"encoding/json"
 	"net/http"
 	"time"
-
-	"github.com/sirupsen/logrus"
 )
 
 type shortenURLRequest struct {
@@ -35,11 +33,8 @@ func ShortenURLHandler(w http.ResponseWriter, r *http.Request) {
 	url.ShortenedURL = url.GenerateShortURL(url.OriginalURL)
 	url.CreatedAt = time.Now()
 	url.ExpiresAt = time.Now().AddDate(10, 0, 0)
-	dao, err := dao.NewURLDao()
-	if err != nil { //!Err Handling
-		logrus.Error("error al instanciar el dao")
-		return
-	}
+	dao, _ := DAO.NewURLDao()
+
 	err = dao.Save(&url)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
