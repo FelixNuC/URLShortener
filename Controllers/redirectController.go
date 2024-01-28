@@ -6,21 +6,20 @@ import (
 )
 
 func RedirectURLHandler(w http.ResponseWriter, r *http.Request) {
-	// Obtener el identificador de la URL corta desde la ruta
+
 	shortURL := r.URL.Path[len("/"):]
 
-	// Obtener el DAO y buscar la URL original correspondiente
 	dao, err := DAO.NewURLDao()
-	if err != nil { //!Err Handling
-
+	if err != nil {
+		http.Error(w, "Error interno", http.StatusInternalServerError)
 		return
 	}
-	url, err := dao.Get(shortURL)
+
+	urlModel, err := dao.Get(shortURL)
 	if err != nil {
-		// Si la URL no se encuentra, devuelve un error 404
+
 		http.Error(w, "URL no encontrada", http.StatusNotFound)
 		return
 	}
-
-	http.Redirect(w, r, url.OriginalURL, http.StatusFound)
+	http.Redirect(w, r, urlModel.OriginalURL, http.StatusFound)
 }

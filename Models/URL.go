@@ -1,6 +1,8 @@
 package models
 
 import (
+	"github.com/google/uuid"
+
 	"URLShortener/interfaces"
 	"crypto/sha256"
 	"encoding/base64"
@@ -12,6 +14,7 @@ import (
 var _ interfaces.URLInterface = &URL{}
 
 type URL struct {
+	ID           string    `json:"id"`
 	OriginalURL  string    `json:"original_url"`
 	ShortenedURL string    `json:"shortened_url"`
 	CreatedAt    time.Time `json:"created_at"`
@@ -33,6 +36,7 @@ func (u *URL) GenerateShortURL(originalURL string) string {
 	if len(shortURL) > 10 {
 		shortURL = shortURL[:10]
 	}
+	u.ID = uuid.NewString()
 
 	return shortURL
 }

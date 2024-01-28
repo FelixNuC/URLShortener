@@ -10,4 +10,5 @@ import (
 func SetupRoutes() {
 	http.HandleFunc("/shorten", controllers.ShortenURLHandler)
 	http.HandleFunc("/", controllers.RedirectURLHandler)
+	http.HandleFunc("/register", controllers.UserRegisterHandler)
 }
